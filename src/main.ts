@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import { BootScene } from './scenes/BootScene.ts';
 import { PlaygroundScene } from './scenes/PlaygroundScene.ts';
 import { RacingScene } from './scenes/RacingScene.ts';
+import { initVisitorCounter } from './utils/visitorCounter.ts';
 import './style.css';
 
 const config: Phaser.Types.Core.GameConfig = {
@@ -35,6 +36,7 @@ const game = new Phaser.Game(config);
 
 // Setup HTML HUD Event Listeners
 window.addEventListener('DOMContentLoaded', () => {
+  void initVisitorCounter();
   const speedEl = document.getElementById('hud-speed-value');
   const boostBarEl = document.getElementById('hud-boost-bar');
   const boostLabelEl = document.getElementById('hud-boost-label');

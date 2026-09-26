@@ -403,6 +403,73 @@ html, body {
   }
 }
 
+/* Visitor counter pill (homelab view-counter service) */
+.visitor-counter {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 14px;
+  background: var(--color-surface);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--color-border);
+  border-radius: 9999px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  white-space: nowrap;
+  user-select: none;
+}
+
+.visitor-counter__pulse {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 7px;
+  height: 7px;
+}
+
+.visitor-counter__ping {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 9999px;
+  background: var(--color-cyan);
+  opacity: 0.75;
+  animation: visitorPing 2.2s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+.visitor-counter__core {
+  position: relative;
+  width: 5px;
+  height: 5px;
+  border-radius: 9999px;
+  background: var(--color-cyan);
+  box-shadow: 0 0 8px rgba(56, 189, 248, 0.8);
+}
+
+.visitor-counter__label {
+  font-weight: 700;
+  color: var(--color-text-dim);
+  letter-spacing: 0.15em;
+}
+
+.visitor-counter__count {
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-cyan);
+  min-width: 2ch;
+}
+
+@keyframes visitorPing {
+  75%,
+  100% {
+    transform: scale(2.6);
+    opacity: 0;
+  }
+}
+
 /* Primary action button */
 .hud-btn-primary {
   border-color: rgba(251, 191, 36, 0.45);

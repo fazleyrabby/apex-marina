@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Verified — Player can win: race simulation results - 2026-09-26
+- Added `RacingScene.autopilot` hook (AI drives the player boat; for simulations and future demo mode).
+- Headless full-race sims on the big Sunset Bay loop (~60s races): **skilled P3 (1:01, +2s)**, **average P3 (1:01, +1s)**, **casual P4 (1:02, +3s)** — podium in reach for decent drivers, mid-pack for casuals, nobody dominates; finishers spread ~3s over 60s. Rubber-band (±6%) + trimmed AI pace confirmed working, zero console errors.
+
 ### Fixed — Race Again button + full-world track - 2026-09-26
 - **Race Again now restarts properly**: the results overlay is hidden on every scene switch (previously the restarted race ran invisibly behind the stale card, looking dead). Verified: overlay hides, fresh countdown starts, clock resets.
 - **Sunset Bay is now a full-world loop** (~7s kiddie oval → ~60s lap): 6 gates spanning x 520–3040 / y 450–2030, start grid on the south straight, AI racing line with 11 waypoints, all legs keeping 250px+ clearance from islands. Verified gate crossing on the new geometry and AI racing it.

@@ -46,6 +46,8 @@ export class RacingScene extends Phaser.Scene {
   private countdownStep = -1;
   private prevPlayerGates = 0;
   private resultsShown = false;
+  /** Overrides keyboard input for the player boat when set (simulations, demo mode). */
+  public autopilot: AIController | null = null;
   private finishDelayT = 0;
   private minimap!: Phaser.GameObjects.Graphics;
   private minimapT = 0;
@@ -63,6 +65,7 @@ export class RacingScene extends Phaser.Scene {
     this.countdownT = 0;
     this.countdownStep = -1;
     this.resultsShown = false;
+    this.autopilot = null;
     this.ais = [];
     this.controllers = [];
 
@@ -167,18 +170,27 @@ export class RacingScene extends Phaser.Scene {
       return;
     }
 
-    // Gather player input (coast on autopilot after finish)
+    // Gather player input (coast on autopilot after finish).
+    // `autopilot` overrides the keyboard — used by automated simulations
+    // and (later) a demo/attract mode. Set to null for human play.
     const playerState = this.manager.racers.find((r) => r.isPlayer);
     const finished = playerState?.isFinished ?? false;
     const controls = finished
       ? { up: false, down: false, left: false, right: false, boost: false }
-      : {
-          up: Boolean(this.cursors?.up.isDown || this.keyW?.isDown),
-          down: Boolean(this.cursors?.down.isDown || this.keyS?.isDown),
-          left: Boolean(this.cursors?.left.isDown || this.keyA?.isDown),
-          right: Boolean(this.cursors?.right.isDown || this.keyD?.isDown),
-          boost: Boolean(this.keySpace?.isDown),
-        };
+      : this.autopilot
+        ? this.autopilot.update(
+            dt,
+            this.player.x, this.player.y, this.player.heading,
+            this.player.currentSpeed, this.player.config.maxSpeed,
+            this.ais.map((a) => ({ x: a.x, y: a.y })),
+          )
+        : {
+            up: Boolean(this.cursors?.up.isDown || this.keyW?.isDown),
+            down: Boolean(this.cursors?.down.isDown || this.keyS?.isDown),
+            left: Boolean(this.cursors?.left.isDown || this.keyA?.isDown),
+            right: Boolean(this.cursors?.right.isDown || this.keyD?.isDown),
+            boost: Boolean(this.keySpace?.isDown),
+          };
 
     this.playerPrev = { x: this.player.x, y: this.player.y };
     this.player.update(time, delta, controls);
