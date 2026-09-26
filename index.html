@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Apex Marina — Top-Down Speedboat Racing & Exploration</title>
+    <meta name="description" content="A fast arcade top-down speedboat racing and coastal exploration game built with Phaser 3, TypeScript, and high-performance hydrodynamics." />
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚤</text></svg>" />
+  </head>
+  <body>
+    <div id="app">
+      <!-- Phaser 3 Canvas Mount Container -->
+      <div id="game-canvas-container"></div>
+
+      <!-- Glassmorphic HUD Layer -->
+      <div class="hud-overlay">
+        <!-- Header -->
+        <header class="hud-header">
+          <div class="brand-badge">
+            <span class="brand-icon">⚡</span>
+            <span class="brand-title">Apex Marina</span>
+          </div>
+
+          <div class="hud-actions">
+            <button id="hud-nav-btn" class="hud-btn hud-btn-primary" title="Start a race">
+              🏁 Race
+            </button>
+            <button id="hud-mute-btn" class="hud-btn" title="Toggle Audio (M)">
+              🔊 Sound (M)
+            </button>
+            <button id="hud-debug-btn" class="hud-btn" onclick="window.dispatchEvent(new CustomEvent('apex-toggle-debug'))" title="Toggle Telemetry (F1)">
+              📊 Telemetry (F1)
+            </button>
+          </div>
+        </header>
+
+        <!-- Debug Telemetry Overlay (F1) -->
+        <div id="hud-debug-panel" class="debug-panel">
+          <div class="debug-title">
+            <span>Hydrodynamics Telemetry</span>
+            <span style="color: #94a3b8; font-weight: normal;">[F1]</span>
+          </div>
+          <div class="debug-row"><span>FPS:</span><span id="dbg-fps">60</span></div>
+          <div class="debug-row"><span>World Pos:</span><span id="dbg-pos">(1800, 1200)</span></div>
+          <div class="debug-row"><span>Ground Speed:</span><span id="dbg-speed">0 px/s</span></div>
+          <div class="debug-row"><span>Forward Velocity:</span><span id="dbg-forward">0 px/s</span></div>
+          <div class="debug-row"><span>Lateral Slip:</span><span id="dbg-lateral">0 px/s</span></div>
+          <div class="debug-row"><span>Compass Heading:</span><span id="dbg-heading">0°</span></div>
+        </div>
+
+        <!-- Race HUD (visible during races) -->
+        <div id="hud-race-bar" class="race-bar" style="display: none;">
+          <div class="race-pill"><span class="race-label">LAP</span><span id="hud-lap" class="race-value">1/3</span></div>
+          <div id="hud-flash" class="race-flash"></div>
+          <div class="race-pill"><span class="race-label">POS</span><span id="hud-pos" class="race-value">6/6</span></div>
+        </div>
+
+        <!-- Footer Dashboards -->
+        <footer class="hud-footer">
+          <!-- Speedometer -->
+          <div class="speedometer-card">
+            <div class="speed-metric">
+              <span id="hud-speed-value" class="speed-value">0</span>
+              <span class="speed-unit">KTS</span>
+            </div>
+            <div class="speed-status-row">
+              <span class="speed-sublabel">Speedometer</span>
+              <span id="hud-drift-indicator" class="drift-badge">DRIFT</span>
+            </div>
+          </div>
+
+          <!-- Controls Reminder Bar -->
+          <div class="controls-hint-bar">
+            <span><kbd>W</kbd> Throttle</span>
+            <span><kbd>S</kbd> Brake/Reverse</span>
+            <span><kbd>A</kbd><kbd>D</kbd> Steer</span>
+            <span><kbd>SPACE</kbd> Nitro</span>
+          </div>
+
+          <!-- Nitro Boost Meter -->
+          <div class="boost-card">
+            <div class="boost-header">
+              <span class="boost-title">Nitro Thrust</span>
+              <span id="hud-boost-label" class="boost-label">NITRO READY [SPACE]</span>
+            </div>
+            <div class="boost-meter-track">
+              <div id="hud-boost-bar" class="boost-meter-fill" style="width: 100%;"></div>
+            </div>
+          </div>
+        </footer>
+
+        <!-- Race Results Overlay -->
+        <div id="race-results" class="results-overlay" style="display: none;">
+          <div class="results-card">
+            <div class="results-title">🏁 Race Complete</div>
+            <div id="results-subtitle" class="results-subtitle"></div>
+            <div id="results-rows" class="results-rows"></div>
+            <div class="results-actions">
+              <button id="results-retry" class="hud-btn hud-btn-primary">↻ Race Again</button>
+              <button id="results-explore" class="hud-btn">🧭 Explore</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
