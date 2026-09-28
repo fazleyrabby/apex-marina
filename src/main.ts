@@ -112,6 +112,26 @@ window.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // ---- Fullscreen toggle (hidden where the API is unavailable, e.g. iPhone Safari) ----
+  const fsBtn = document.getElementById('hud-fullscreen-btn');
+  if (fsBtn) {
+    if (!document.fullscreenEnabled) {
+      fsBtn.style.display = 'none';
+    } else {
+      const syncLabel = (): void => {
+        fsBtn.innerHTML = document.fullscreenElement ? '⛶ Exit' : '⛶ Full';
+      };
+      fsBtn.addEventListener('click', () => {
+        if (document.fullscreenElement) {
+          void document.exitFullscreen().catch(() => {});
+        } else {
+          void document.documentElement.requestFullscreen().catch(() => {});
+        }
+      });
+      document.addEventListener('fullscreenchange', syncLabel);
+    }
+  }
+
   window.addEventListener('apex-sound-toggled', (e: Event) => {
     const detail = (e as CustomEvent).detail;
     if (muteBtn) {

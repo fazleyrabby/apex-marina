@@ -55,6 +55,12 @@ export class RacingScene extends Phaser.Scene {
   private playerPrev = { x: 0, y: 0 };
   private touch = TouchController.getInstance();
   private baseZoom = 1.15;
+  // Off-screen next-gate guide arrow (critical on narrow portrait screens)
+  private guideArrow!: Phaser.GameObjects.Container;
+  private guideTri!: Phaser.GameObjects.Graphics;
+  private guideText!: Phaser.GameObjects.Text;
+  private guideT = 0;
+  private scratch = new Phaser.Math.Vector2();
 
   constructor() {
     super({ key: 'RacingScene' });
@@ -123,6 +129,27 @@ export class RacingScene extends Phaser.Scene {
     this.positionCountdown();
 
     this.minimap = this.add.graphics().setScrollFactor(0).setDepth(90);
+
+    // Next-gate guide arrow: triangle rotated toward the gate, upright distance label
+    this.guideTri = this.add.graphics();
+    this.guideTri.fillStyle(0x38bdf8, 0.95);
+    this.guideTri.fillTriangle(24, 0, -10, -15, -10, 15);
+    this.guideTri.lineStyle(2, 0xe0f2fe, 0.9);
+    this.guideTri.strokeTriangle(24, 0, -10, -15, -10, 15);
+    this.guideText = this.add
+      .text(0, 30, '', {
+        fontFamily: 'Outfit, sans-serif',
+        fontSize: '15px',
+        color: '#7dd3fc',
+        backgroundColor: 'rgba(2,6,23,0.7)',
+        padding: { x: 6, y: 2 },
+      })
+      .setOrigin(0.5);
+    this.guideArrow = this.add
+      .container(0, 0, [this.guideTri, this.guideText])
+      .setScrollFactor(0)
+      .setDepth(95)
+      .setVisible(false);
 
     if (this.input.keyboard) {
       this.cursors = this.input.keyboard.createCursorKeys();
@@ -273,6 +300,7 @@ export class RacingScene extends Phaser.Scene {
     this.lookAhead.y = Phaser.Math.Linear(this.lookAhead.y, ty, 0.1);
 
     this.drawMinimap(time);
+    this.updateGuideArrow();
     this.dispatchRaceHUD();
     this.dispatchBoatTelemetry();
   }
@@ -370,7 +398,8 @@ export class RacingScene extends Phaser.Scene {
     const mw = 150;
     const mh = 100;
     const mx = this.scale.width / 2 - mw / 2;
-    const my = this.scale.height - mh - 86;
+    // Lift above the touch pads + footer on narrow screens.
+    const my = this.scale.height - mh - (this.scale.width < 700 ? 220 : 86);
     const W = SUNSET_BAY.worldBounds.width;
     const H = SUNSET_BAY.worldBounds.height;
     g.fillStyle(0x020617, 0.62);
@@ -388,6 +417,60 @@ export class RacingScene extends Phaser.Scene {
     // Player dot
     g.fillStyle(0xf43f5e, 1);
     g.fillCircle(mx + (this.player.x / W) * mw, my + (this.player.y / H) * mh, 4);
+  }
+
+  private updateGuideArrow(): void {
+    const ps = this.manager.racers.find((r) => r.isPlayer);
+    if (this.phase !== 'racing' || !ps || ps.isFinished) {
+      this.guideArrow.setVisible(false);
+      return;
+    }
+    const gate = SUNSET_BAY.checkpoints[ps.checkpointIndex];
+    if (!gate) {
+      this.guideArrow.setVisible(false);
+      return;
+    }
+    const gx = (gate.x1 + gate.x2) / 2;
+    const gy = (gate.y1 + gate.y2) / 2;
+    // World → screen transform (matches Camera.getScreenPoint).
+    const cam = this.cameras.main;
+    const pt = this.scratch.set(
+      (gx - cam.scrollX) * cam.zoom + cam.x,
+      (gy - cam.scrollY) * cam.zoom + cam.y,
+    );
+
+    const w = this.scale.width;
+    const h = this.scale.height;
+    const marginX = 70;
+    const topMargin = 110;
+    // Touch pads + footer occupy the bottom on touch devices.
+    const bottomMargin = this.touch.isTouch ? 260 : 170;
+
+    if (pt.x > marginX && pt.x < w - marginX && pt.y > topMargin && pt.y < h - bottomMargin) {
+      this.guideArrow.setVisible(false);
+      return;
+    }
+
+    // Clamp the arrow onto the visible rect along the center→gate ray.
+    const cx = w / 2;
+    const cy = h / 2;
+    const dx = pt.x - cx;
+    const dy = pt.y - cy;
+    let t = Infinity;
+    if (dx > 0) t = Math.min(t, (w - marginX - cx) / dx);
+    if (dx < 0) t = Math.min(t, (marginX - cx) / dx);
+    if (dy > 0) t = Math.min(t, (h - bottomMargin - cy) / dy);
+    if (dy < 0) t = Math.min(t, (topMargin - cy) / dy);
+    if (!Number.isFinite(t)) {
+      this.guideArrow.setVisible(false);
+      return;
+    }
+    this.guideArrow.setPosition(cx + dx * t, cy + dy * t).setVisible(true);
+    this.guideTri.setRotation(Math.atan2(dy, dx));
+    this.guideT++;
+    if (this.guideT % 6 === 0) {
+      this.guideText.setText(`${Math.max(1, Math.round(ps.distToNext / 10))}m`);
+    }
   }
 
   private dispatchRaceHUD(): void {

@@ -30,6 +30,9 @@
             <button id="hud-mute-btn" class="hud-btn" title="Toggle Audio (M)">
               🔊 Sound (M)
             </button>
+            <button id="hud-fullscreen-btn" class="hud-btn" title="Toggle fullscreen">
+              ⛶ Full
+            </button>
             <button id="hud-debug-btn" class="hud-btn" onclick="window.dispatchEvent(new CustomEvent('apex-toggle-debug'))" title="Toggle Telemetry (F1)">
               📊 Telemetry (F1)
             </button>
@@ -94,20 +97,17 @@
         <!-- Virtual touch controls (touch devices only, toggled by TouchController) -->
         <div id="touch-controls" style="display: none;">
           <div class="touch-cluster touch-left">
-            <div class="dpad" role="group" aria-label="Boat controls">
-              <span class="dpad-empty"></span>
-              <button class="touch-btn dpad-btn" data-touch="up" aria-label="Throttle">▲</button>
-              <span class="dpad-empty"></span>
-              <button class="touch-btn dpad-btn" data-touch="left" aria-label="Steer left">◀</button>
-              <span class="dpad-center"></span>
-              <button class="touch-btn dpad-btn" data-touch="right" aria-label="Steer right">▶</button>
-              <span class="dpad-empty"></span>
-              <button class="touch-btn dpad-btn" data-touch="down" aria-label="Brake and reverse">▼</button>
-              <span class="dpad-empty"></span>
+            <div class="pedal-pad" role="group" aria-label="Throttle and brake">
+              <button class="touch-btn pad-btn" data-touch="up" aria-label="Throttle">▲</button>
+              <button class="touch-btn pad-btn" data-touch="down" aria-label="Brake and reverse">▼</button>
             </div>
           </div>
           <div class="touch-cluster touch-right">
             <button class="touch-btn touch-boost" data-touch="boost" aria-label="Nitro boost">⚡</button>
+            <div class="steer-pad" role="group" aria-label="Steering">
+              <button class="touch-btn pad-btn" data-touch="left" aria-label="Steer left">◀</button>
+              <button class="touch-btn pad-btn" data-touch="right" aria-label="Steer right">▶</button>
+            </div>
           </div>
         </div>
 

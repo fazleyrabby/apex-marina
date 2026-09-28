@@ -634,12 +634,11 @@ html, body {
   pointer-events: auto;
 }
 
-/* Classic cross D-pad: 3x3 grid, directions + center pivot */
-.dpad {
-  display: grid;
-  grid-template-columns: repeat(3, 56px);
-  grid-template-rows: repeat(3, 56px);
-  gap: 4px;
+/* Split pads: vertical throttle/brake pad (left), horizontal steer pad (right) */
+.pedal-pad {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
   padding: 10px;
   border-radius: 24px;
   background: rgba(15, 23, 42, 0.45);
@@ -649,23 +648,29 @@ html, body {
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
 }
 
-.dpad-empty {
-  display: block;
-}
-
-.dpad-center {
-  display: block;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.08);
+.steer-pad {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  padding: 10px;
+  border-radius: 24px;
+  background: rgba(15, 23, 42, 0.45);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border: 1px solid rgba(255, 255, 255, 0.12);
-  margin: 8px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
 }
 
-.dpad-btn {
-  width: 100%;
-  height: 100%;
-  border-radius: 14px;
-  font-size: 20px;
+.touch-right {
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.pad-btn {
+  width: 60px;
+  height: 60px;
+  border-radius: 16px;
+  font-size: 21px;
 }
 
 .touch-btn {
@@ -716,20 +721,15 @@ body.touch-device .controls-hint-bar {
   }
 
   .hud-header {
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     gap: 8px;
   }
 
-  .brand-badge {
-    padding: 7px 12px;
-    gap: 8px;
-  }
-
-  .brand-title {
-    font-size: 12px;
-  }
-
-  #visitor-counter-mount {
+  /* Mobile gets a minimal HUD: brand, telemetry + visitor pills are gone,
+     leaving only Race / Sound / Fullscreen actions. */
+  .brand-badge,
+  #visitor-counter-mount,
+  #hud-debug-btn {
     display: none;
   }
 
@@ -746,18 +746,13 @@ body.touch-device .controls-hint-bar {
     bottom: 132px;
   }
 
-  .dpad {
-    grid-template-columns: repeat(3, 50px);
-    grid-template-rows: repeat(3, 50px);
-    padding: 8px;
+  .pad-btn {
+    width: 54px;
+    height: 54px;
+    font-size: 19px;
   }
 
-  .dpad-btn {
-    font-size: 18px;
-  }
-
-  .touch-boost {
-    width: 68px;
+  .touch-boost {    width: 68px;
     height: 68px;
     font-size: 25px;
   }
