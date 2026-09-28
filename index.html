@@ -91,6 +91,26 @@
           </div>
         </footer>
 
+        <!-- Virtual touch controls (touch devices only, toggled by TouchController) -->
+        <div id="touch-controls" style="display: none;">
+          <div class="touch-cluster touch-left">
+            <div class="dpad" role="group" aria-label="Boat controls">
+              <span class="dpad-empty"></span>
+              <button class="touch-btn dpad-btn" data-touch="up" aria-label="Throttle">▲</button>
+              <span class="dpad-empty"></span>
+              <button class="touch-btn dpad-btn" data-touch="left" aria-label="Steer left">◀</button>
+              <span class="dpad-center"></span>
+              <button class="touch-btn dpad-btn" data-touch="right" aria-label="Steer right">▶</button>
+              <span class="dpad-empty"></span>
+              <button class="touch-btn dpad-btn" data-touch="down" aria-label="Brake and reverse">▼</button>
+              <span class="dpad-empty"></span>
+            </div>
+          </div>
+          <div class="touch-cluster touch-right">
+            <button class="touch-btn touch-boost" data-touch="boost" aria-label="Nitro boost">⚡</button>
+          </div>
+        </div>
+
         <!-- Race Results Overlay -->
         <div id="race-results" class="results-overlay" style="display: none;">
           <div class="results-card">

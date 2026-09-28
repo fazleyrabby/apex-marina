@@ -606,3 +606,172 @@ html, body {
   justify-content: center;
   margin-top: 6px;
 }
+
+/* Prevent pull-to-refresh / pinch-zoom gestures hijacking gameplay on touch */
+html, body {
+  touch-action: none;
+  overscroll-behavior: none;
+}
+
+/* Virtual touch controls — only displayed on touch devices (see TouchController) */
+#touch-controls {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 118px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  padding: 0 14px;
+  pointer-events: none;
+  z-index: 40;
+}
+
+.touch-cluster {
+  display: flex;
+  gap: 12px;
+  align-items: flex-end;
+  pointer-events: auto;
+}
+
+/* Classic cross D-pad: 3x3 grid, directions + center pivot */
+.dpad {
+  display: grid;
+  grid-template-columns: repeat(3, 56px);
+  grid-template-rows: repeat(3, 56px);
+  gap: 4px;
+  padding: 10px;
+  border-radius: 24px;
+  background: rgba(15, 23, 42, 0.45);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+}
+
+.dpad-empty {
+  display: block;
+}
+
+.dpad-center {
+  display: block;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  margin: 8px;
+}
+
+.dpad-btn {
+  width: 100%;
+  height: 100%;
+  border-radius: 14px;
+  font-size: 20px;
+}
+
+.touch-btn {
+  border: 1.5px solid rgba(255, 255, 255, 0.25);
+  background: rgba(15, 23, 42, 0.55);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  color: #f8fafc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  touch-action: none;
+  -webkit-tap-highlight-color: transparent;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+  transition: transform 0.08s ease, background 0.08s ease;
+}
+
+.touch-btn.pressed {
+  transform: scale(0.9);
+  background: rgba(56, 189, 248, 0.45);
+  border-color: var(--color-cyan);
+}
+
+.touch-boost {
+  width: 76px;
+  height: 76px;
+  border-radius: 50%;
+  font-size: 28px;
+  border-color: rgba(251, 191, 36, 0.55);
+  color: var(--color-amber);
+}
+
+.touch-boost.pressed {
+  background: rgba(251, 191, 36, 0.45);
+  border-color: var(--color-amber);
+}
+
+/* Hide the keyboard hint bar on touch devices regardless of screen width */
+body.touch-device .controls-hint-bar {
+  display: none;
+}
+
+/* Small-screen HUD: keep the world visible, keep controls reachable */
+@media (max-width: 640px) {
+  .hud-overlay {
+    padding: 10px;
+  }
+
+  .hud-header {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .brand-badge {
+    padding: 7px 12px;
+    gap: 8px;
+  }
+
+  .brand-title {
+    font-size: 12px;
+  }
+
+  #visitor-counter-mount {
+    display: none;
+  }
+
+  .hud-actions {
+    gap: 6px;
+  }
+
+  .hud-btn {
+    padding: 7px 10px;
+    font-size: 12px;
+  }
+
+  #touch-controls {
+    bottom: 132px;
+  }
+
+  .dpad {
+    grid-template-columns: repeat(3, 50px);
+    grid-template-rows: repeat(3, 50px);
+    padding: 8px;
+  }
+
+  .dpad-btn {
+    font-size: 18px;
+  }
+
+  .touch-boost {
+    width: 68px;
+    height: 68px;
+    font-size: 25px;
+  }
+
+  .speedometer-card, .boost-card {
+    padding: 10px 14px;
+    min-width: 120px;
+  }
+
+  .speed-value {
+    font-size: 30px;
+  }
+
+  .boost-card {
+    min-width: 150px;
+  }
+}

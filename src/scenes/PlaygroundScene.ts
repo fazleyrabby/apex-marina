@@ -4,6 +4,7 @@ import { WaterSystem } from '../world/WaterSystem.ts';
 import { Environment, type Obstacle } from '../world/Environment.ts';
 import { DEFAULT_PLAYER_BOAT } from '../data/boats.ts';
 import { SoundManager } from '../utils/SoundManager.ts';
+import { TouchController } from '../input/TouchController.ts';
 
 export class PlaygroundScene extends Phaser.Scene {
   private waterSystem!: WaterSystem;
@@ -21,6 +22,7 @@ export class PlaygroundScene extends Phaser.Scene {
 
   // Camera lookahead target
   private cameraLookAhead!: Phaser.GameObjects.Sprite;
+  private touch = TouchController.getInstance();
 
   // World Bounds
   private readonly worldWidth = 3600;
@@ -55,7 +57,9 @@ export class PlaygroundScene extends Phaser.Scene {
     this.cameraLookAhead.setVisible(false);
 
     this.cameras.main.startFollow(this.cameraLookAhead, true, 0.07, 0.07);
-    this.cameras.main.setZoom(1.05);
+    // Zoom out slightly on narrow screens so the boat stays readable
+    // and more water is visible ahead.
+    this.cameras.main.setZoom(this.scale.width < 700 ? 0.8 : 1.05);
 
     // 6. Setup Keyboard Input
     if (this.input.keyboard) {
@@ -92,13 +96,14 @@ export class PlaygroundScene extends Phaser.Scene {
   }
 
   public update(time: number, delta: number): void {
-    // 1. Gather Controls
+    // 1. Gather Controls (keyboard OR virtual touch buttons)
+    const t = this.touch.state;
     const controls = {
-      up: Boolean(this.cursors?.up.isDown || this.keyW?.isDown),
-      down: Boolean(this.cursors?.down.isDown || this.keyS?.isDown),
-      left: Boolean(this.cursors?.left.isDown || this.keyA?.isDown),
-      right: Boolean(this.cursors?.right.isDown || this.keyD?.isDown),
-      boost: Boolean(this.keySpace?.isDown),
+      up: Boolean(this.cursors?.up.isDown || this.keyW?.isDown || t.up),
+      down: Boolean(this.cursors?.down.isDown || this.keyS?.isDown || t.down),
+      left: Boolean(this.cursors?.left.isDown || this.keyA?.isDown || t.left),
+      right: Boolean(this.cursors?.right.isDown || this.keyD?.isDown || t.right),
+      boost: Boolean(this.keySpace?.isDown || t.boost),
     };
 
     // 2. Update Boat Hydrodynamics & Wake

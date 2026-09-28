@@ -10,6 +10,7 @@ import { RaceManager, type RacerBody } from '../racing/RaceManager.ts';
 import { AIController } from '../racing/AIController.ts';
 import { renderGate } from '../racing/Checkpoint.ts';
 import { SoundManager } from '../utils/SoundManager.ts';
+import { TouchController } from '../input/TouchController.ts';
 import type { BoatConfig } from '../types/index.ts';
 
 type RacePhase = 'countdown' | 'racing' | 'done';
@@ -52,6 +53,8 @@ export class RacingScene extends Phaser.Scene {
   private minimap!: Phaser.GameObjects.Graphics;
   private minimapT = 0;
   private playerPrev = { x: 0, y: 0 };
+  private touch = TouchController.getInstance();
+  private baseZoom = 1.15;
 
   constructor() {
     super({ key: 'RacingScene' });
@@ -108,7 +111,8 @@ export class RacingScene extends Phaser.Scene {
     this.lookAhead = this.add.sprite(grid[0].x, grid[0].y, '');
     this.lookAhead.setVisible(false);
     this.cameras.main.startFollow(this.lookAhead, true, 0.07, 0.07);
-    this.cameras.main.setZoom(1.15);
+    this.baseZoom = this.scale.width < 700 ? 0.9 : 1.15;
+    this.cameras.main.setZoom(this.baseZoom);
 
     // Countdown text (screen-fixed)
     this.countdownText = this.add
@@ -185,11 +189,11 @@ export class RacingScene extends Phaser.Scene {
             this.ais.map((a) => ({ x: a.x, y: a.y })),
           )
         : {
-            up: Boolean(this.cursors?.up.isDown || this.keyW?.isDown),
-            down: Boolean(this.cursors?.down.isDown || this.keyS?.isDown),
-            left: Boolean(this.cursors?.left.isDown || this.keyA?.isDown),
-            right: Boolean(this.cursors?.right.isDown || this.keyD?.isDown),
-            boost: Boolean(this.keySpace?.isDown),
+            up: Boolean(this.cursors?.up.isDown || this.keyW?.isDown || this.touch.state.up),
+            down: Boolean(this.cursors?.down.isDown || this.keyS?.isDown || this.touch.state.down),
+            left: Boolean(this.cursors?.left.isDown || this.keyA?.isDown || this.touch.state.left),
+            right: Boolean(this.cursors?.right.isDown || this.keyD?.isDown || this.touch.state.right),
+            boost: Boolean(this.keySpace?.isDown || this.touch.state.boost),
           };
 
     this.playerPrev = { x: this.player.x, y: this.player.y };
@@ -292,7 +296,7 @@ export class RacingScene extends Phaser.Scene {
     });
     if (this.countdownT >= 3400) {
       this.phase = 'racing';
-      this.cameras.main.zoomTo(1.05, 600, 'Cubic.easeOut');
+      this.cameras.main.zoomTo(this.baseZoom, 600, 'Cubic.easeOut');
       this.time.delayedCall(700, () => this.countdownText.setVisible(false));
       window.dispatchEvent(new CustomEvent('apex-race-go', {}));
     }
